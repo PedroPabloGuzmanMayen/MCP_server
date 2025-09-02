@@ -1,0 +1,70 @@
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import {z} from 'zod'
+
+
+//Init server
+const server = new McpServer({
+    name: 'Spotiyou',
+    version: '1.0.0'
+})
+
+//Define tools
+server.tool( 
+    'Get user playlists',
+    'Tool to get user playlists',
+    {
+        username: z.string().describe('Username'),
+        password: z.string().describe('Password')
+    },
+    async ({ username, password }) => {
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: `Logged in as ${username}`
+                }
+            ]
+        };
+    }
+)
+
+server.tool( 
+    'Get user playlists',
+    'Tool to get user playlists',
+    {
+        username: z.string().describe('Username'),
+        password: z.string().describe('Password')
+    },
+    async ({ username, password }) => {
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: `Logged in as ${username}`
+                }
+            ]
+        };
+    }
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
