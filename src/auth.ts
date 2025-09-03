@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { Server } from 'http';
+import fs from 'fs';
 
 dotenv.config({ path: '../.env' });
 
@@ -34,7 +35,6 @@ const scopes = [
 
 const app = express()
 const PORT = 8000
-const authUrl = new URL("https://accounts.spotify.com/authorize")
 
 const generateRandomString = (length: number): string => {
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -61,26 +61,56 @@ const server = app.listen(PORT, () => {
 
 app.use(cors());
 
+const codeVerifier  = generateRandomString(64);
+const hashed = await sha256(codeVerifier)
+const codeChallenge = base64encode(hashed);
+
 app.get('/', async (req: Request, res: Response) => {
 
-    const codeVerifier  = generateRandomString(64);
-    const hashed = await sha256(codeVerifier)
-    const codeChallenge = base64encode(hashed);
     const params =  {
       response_type: 'code',
       client_id: CLIENT_ID,
       scopes,
       code_challenge_method: 'S256',
       code_challenge: codeChallenge,
-      redirect_uri: authUrl,
+      redirect_uri: REDIRECT_URI,
     }
-
-    res.redirect()
-    
+    try {
+      res.redirect(`https://accounts.spotify.com/authorize?${params.toString()}`);
+    }
+    catch(error){
+      console.log('Error redirectiing to spotify')
+      res.send()
+    }
 })
 
-app.get('/callback', (req: Request, res: Response) => {
+app.get('/callback', async (req: Request, res: Response) => {
 
+  const {code}= req.query
+  const payload = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      client_id: CLIENT_ID,
+      grant_type: 'authorization_code',
+      redirect_uri:REDIRECT_URI,
+      code_verifier: codeVerifier,
+    }),
+  }
+
+  const body = await fetch("https://accounts.spotify.com/api/token", payload);
+  const response = await body.json();
+
+  const accessToken = response.access_token;
+  if (accessToken) {
+    const envPath = '../.env';
+    let envContent = fs.readFileSync(envPath, 'utf8');
+    envContent = envContent.replace(/TOKEN=.*/g, '');
+    envContent += `\nTOKEN=${accessToken}\n`;
+    fs.writeFileSync(envPath, envContent, 'utf8');
+  }
   server.close(() => {
     console.log('Server closing...')
     process.exit(0)
