@@ -5,7 +5,7 @@ import { Server } from 'http';
 import crypto from 'crypto'
 import fs from 'fs';
 
-dotenv.config({ path: '../.env' });
+dotenv.config()
 
 const {
   CLIENT_ID,
@@ -57,7 +57,7 @@ const base64encode = (input: ArrayBuffer): string => {
 }
 
 const server = app.listen(PORT, () => {
-  console.log(`Server listening at http://127.0.0.1:${PORT}`)
+  console.log(`Server listening at http://127.0.0.1:${PORT} and redirect uri is ${REDIRECT_URI}`)
 })
 
 app.use(cors());
@@ -68,14 +68,14 @@ const codeChallenge = base64encode(hashed);
 
 app.get('/', async (req: Request, res: Response) => {
 
-    const params =  {
+    const params = new URLSearchParams ({
       response_type: 'code',
       client_id: CLIENT_ID,
       scope: scopes.join(' '),
       code_challenge_method: 'S256',
       code_challenge: codeChallenge,
-      redirect_uri: REDIRECT_URI,
-    }
+      redirect_uri: REDIRECT_URI
+    })
     try {
       res.redirect(`https://accounts.spotify.com/authorize?${params.toString()}`)
     }
@@ -87,7 +87,11 @@ app.get('/', async (req: Request, res: Response) => {
 
 app.get('/callback', async (req: Request, res: Response) => {
 
-  const {code}= req.query
+  const { code } = req.query;
+  if (!code) {
+    res.status(400).send('Missing authorization code');
+    return;
+  }
   const payload = {
     method: 'POST',
     headers: {
@@ -96,7 +100,8 @@ app.get('/callback', async (req: Request, res: Response) => {
     body: new URLSearchParams({
       client_id: CLIENT_ID,
       grant_type: 'authorization_code',
-      redirect_uri:REDIRECT_URI,
+      code: code.toString(),
+      redirect_uri: REDIRECT_URI,
       code_verifier: codeVerifier,
     }),
   }
@@ -123,7 +128,7 @@ app.get('/callback', async (req: Request, res: Response) => {
     console.error('Error during token exchange:', error);
     res.status(500).send('Error during authentication');
   }
-  
+
   server.close(() => {
     console.log('Server closing...')
     process.exit(0)
