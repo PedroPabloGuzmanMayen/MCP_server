@@ -34,5 +34,14 @@ SECRET=your secret key
 REDIRECT_URI=http://127.0.0.1:8000/callback
 ```
 
+- Finally you wull have to login into Spotify using OAuth 2.0, for this run this commands:
+
+```bash
+npm run auth
+```
+
+- Open your localhost in port 8000 in your browser, this will redirect you to Spotify, login and give the necessary permissions.
+- This will create a `TOKEN` field in your `.env`
+
 
 
