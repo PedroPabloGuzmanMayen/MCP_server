@@ -14,7 +14,7 @@ An MCP server to connect to your Spitfy account.
 - First go to [Spotify for developers](https://developer.spotify.com/) and create an account. 
 - Once your account is created, go to the [Dashboard](https://developer.spotify.com/dashboard) and create a new app.
 - You will get a *Client ID* and a *Client secret*, save them.
-- In the *Redirect URI* field, copy this `[http127.0.0.1](http://127.0.0.1:8000/callback)`
+- In the *Redirect URI* field, copy this `http://127.0.0.1:8000/callback`
 
 
 - Then, clone this repo in your local machine and install all dependencies and compile the project
