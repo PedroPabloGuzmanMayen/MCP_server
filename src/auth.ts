@@ -4,8 +4,7 @@ import cors from 'cors';
 import { Server } from 'http';
 import crypto from 'crypto'
 import fs from 'fs';
-
-dotenv.config()
+dotenv.config({ path: './.env' })
 
 const {
   CLIENT_ID,
@@ -92,6 +91,9 @@ app.get('/callback', async (req: Request, res: Response) => {
     res.status(400).send('Missing authorization code');
     return;
   }
+  else {
+    console.log(`code is ${code}`)
+  }
   const payload = {
     method: 'POST',
     headers: {
@@ -112,11 +114,12 @@ app.get('/callback', async (req: Request, res: Response) => {
     const response = await body.json() as { access_token?: string; error?: string }
     const accessToken = response.access_token
     if (accessToken) {
-      const envPath = '../.env'
+      const envPath = './.env'
       let envContent = fs.readFileSync(envPath, 'utf8')
       envContent = envContent.replace(/TOKEN=.*/g, '')
       envContent += `\nTOKEN=${accessToken}\n`;
       fs.writeFileSync(envPath, envContent, 'utf8')
+      res.status(200).send('Authentication finished :) (close this window)')
     }
     else {
       console.error('No access token received:', response)

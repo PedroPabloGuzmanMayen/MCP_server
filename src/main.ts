@@ -48,6 +48,47 @@ server.tool(
 )
 
 
+server.tool( 
+    'Create a new playlist',
+    'Tool to create a playlist to the user based on a query',
+    {
+        username: z.string().describe('Username'),
+        password: z.string().describe('Password')
+    },
+    async ({ username, password }) => {
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: `Logged in as ${username}`
+                }
+            ]
+        };
+    }
+)
+
+server.tool( 
+    'Get user stas',
+    'Tool to get different users stats',
+    {
+        username: z.string().describe('Username'),
+        password: z.string().describe('Password')
+    },
+    async ({ username, password }) => {
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: `Logged in as ${username}`
+                }
+            ]
+        };
+    }
+)
+
+
+
+
 
 
 
