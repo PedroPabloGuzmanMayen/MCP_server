@@ -1,6 +1,6 @@
 # Spotif MCP server
 
-An MCP server to connect to your Spitfy account. 
+An MCP server to connect to your Spoitfy account. 
 
 ## Setup
 

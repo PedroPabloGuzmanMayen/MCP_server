@@ -1,8 +1,9 @@
-import get_user_tracks from "./spotify.js";  // nota el .js si estás compilando con TS a ESM
+import get_user_tracks from "./spotify.js";
 
 const main = async () => {
-  const tracks = await get_user_tracks(539);
-  console.log(JSON.stringify(tracks, null, 2));
+  const tracks = await get_user_tracks(539) as any[]
+  console.log(tracks.length)
+
 };
 
 main();

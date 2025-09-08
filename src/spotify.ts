@@ -5,8 +5,6 @@ dotenv.config({path: './.env'})
 
 const BASE_URL = 'https://api.spotify.com/v1'
 
-let dinamic_url: String = 'https://api.spotify.com/v1'
-
 const access_token = process.env.TOKEN as String;
 
 const get_user_tracks = async (limit: number) =>{
@@ -20,7 +18,7 @@ const get_user_tracks = async (limit: number) =>{
             let items: any[] = []
             while (remaining > 0){
 
-                const data = await fetch(`${dinamic_url}/me/tracks?offset=${offset.toString()}&limit=${next_request.toString()}`, {
+                const data = await fetch(`${BASE_URL}/me/tracks?offset=${offset.toString()}&limit=${next_request.toString()}`, {
                 headers: {
                     Authorization: `Bearer ${access_token}`
                 }
@@ -33,13 +31,9 @@ const get_user_tracks = async (limit: number) =>{
 
                 next_request = remaining > 50 ? 50: remaining
             }
-
             return items
-
-
         }
         else {
-
             const data = await fetch(`${BASE_URL}/me/tracks`, {
                 headers: {
                      Authorization: `Bearer ${access_token}`
@@ -48,7 +42,6 @@ const get_user_tracks = async (limit: number) =>{
             const response = await data.json()
             
         }
-
     }
     catch (error){
         console.error(`Error during request ${error}`)
