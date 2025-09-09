@@ -49,17 +49,32 @@ const get_user_tracks = async (limit: number) =>{
 
 }
 
-const modify_user_playlist = async () => {
+const play_or_pause_song = async () => {
 
 }
 
-const create_new_playlist = async () =>{
+const search_something = async () =>{
 
 }
 
+const get_user_top_items = async (type: string, time_range: string, offset: number, limit: number) => {
 
-const recommend_new_songs = async() =>{
-    
+    try {
+
+        const data = await fetch(`${BASE_URL}/me/top/${type}?time_range=${time_range}&limit=${limit.toString()}&offset=${offset.toString()}`, {
+            headers: {
+                Authorization: `Bearer ${access_token}`
+            }
+        })
+
+        return await data.json()
+
+    }
+    catch(error){
+        console.error(error)
+    }
+
 }
+
 
 export default get_user_tracks
