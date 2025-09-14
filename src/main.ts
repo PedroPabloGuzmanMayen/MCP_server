@@ -1,5 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {z} from 'zod'
+import { get_user_tracks } from "./spotify";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 
 //Init server
@@ -10,18 +12,18 @@ const server = new McpServer({
 
 //Define tools
 server.tool( 
-    'Get user playlists',
-    'Tool to get user playlists',
+    'Get user tracks',
+    'Tool to get user tracks',
     {
-        username: z.string().describe('Username'),
-        password: z.string().describe('Password')
+        limit: z.number().describe('Limit'),
     },
-    async ({ username, password }) => {
+    async ({ limit }) => {
+        const response = await get_user_tracks(limit)
         return {
             content: [
                 {
                     type: "text",
-                    text: `Logged in as ${username}`
+                    text: JSON.stringify(response)
                 }
             ]
         };
@@ -85,6 +87,10 @@ server.tool(
         };
     }
 )
+
+const transport = new StdioServerTransport()
+await server.connect(transport)
+
 
 
 

@@ -7,7 +7,7 @@ const BASE_URL = 'https://api.spotify.com/v1'
 
 const access_token = process.env.TOKEN as String;
 
-const get_user_tracks = async (limit: number) =>{
+export const get_user_tracks = async (limit: number) =>{
 
     try{
 
@@ -49,15 +49,22 @@ const get_user_tracks = async (limit: number) =>{
 
 }
 
-const play_or_pause_song = async () => {
+export const play_or_pause_song = async () => {
 
 }
 
-const search_something = async () =>{
+export const search_track_id = async (q_string: string) =>{
+
+    try {
+
+    }
+    catch(error){
+        console.log()
+    }
 
 }
 
-const get_user_top_items = async (type: string, time_range: string, offset: number, limit: number) => {
+export const get_user_top_items = async (type: string, time_range: string, offset: number, limit: number) => {
 
     try {
 
@@ -76,5 +83,3 @@ const get_user_top_items = async (type: string, time_range: string, offset: numb
 
 }
 
-
-export default get_user_tracks
