@@ -31,7 +31,8 @@ const scopes = [
     'user-modify-playback-state',
     'user-read-playback-state',
     'user-read-currently-playing',
-    'user-top-read'
+    'user-top-read',
+    'playlist-read-collaborative'
   ]
 
 const app = express()

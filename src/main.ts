@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {z} from 'zod'
-import { get_user_tracks, get_user_top_items, search_track_id, add_items_to_saved, get_user_id, create_playlist } from "./spotify.js";
+import { get_user_tracks, get_user_top_items, search_track_id, 
+    add_items_to_saved, get_user_id, create_playlist, get_user_playlists_id, add_items_to_playlist } from "./spotify.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { text } from "stream/consumers";
 
@@ -167,6 +168,68 @@ server.tool(
     async({user_id, name, visibility, collaborative, description}) =>{
 
         const response = await create_playlist(user_id, name, visibility, collaborative, description)
+
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: JSON.stringify(response)
+                }
+            ]
+        }
+
+    }
+)
+
+server.tool( 
+    'Find_palylist_id',
+    'Tool to find user playlist id',
+    {
+        user_id: z.string().describe('user id'),
+        limit: z.number().describe('Limit'),
+        offset: z.number().describe('Offset')
+    },
+    async ({ limit, offset }) => {
+
+        const response = await get_user_tracks(limit, offset);
+        if (!response) {
+            return {
+                content: [
+                {
+                    type: "text",
+                    text: "No response received from Spotify API.",
+                },
+                ],
+            }
+        }
+        const simplified = {
+            items: response.items.map((item: any) => ({
+            id: item.id,
+            name: item.name
+        })),
+            total_songs: response.total
+        }
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: JSON.stringify(simplified)
+                }
+            ]
+        }
+    }
+)
+
+server.tool(
+    'Add_to_playlist',
+    'Tool that can be used to save tracks in user playlist, should use tracks ids to add tracks',
+    {
+        songs: z.array(z.string()).describe('Array with tracks ids'),
+        playlist_id: z.string().describe('Playlist id')
+    },
+    async({songs, playlist_id}) =>{
+
+        const response = await add_items_to_playlist(songs, playlist_id)
 
         return {
             content: [

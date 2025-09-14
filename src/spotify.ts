@@ -124,8 +124,44 @@ export const create_playlist = async (user_id: string, name: string, visibility:
 
 }
 
-export const add_elements_to_playlist = async() =>{
 
+export const get_user_playlists_id = async(user_id: string, limit: number, offset:number) => {
+    try {
+        const response = await fetch(`${BASE_URL}/users/${user_id}/playlists`, {
+        headers: {
+            Authorization: `Bearer ${access_token}`
+        }
+        })
+        const data = await response.json() as { items: any[]; total: number };
+
+    }
+    catch(error){
+        console.error(`Error during request ${error}`)
+    }
+}
+
+export const add_items_to_playlist = async(songs: string[], playlist_id: string) =>{
+    try {
+
+        const url = `${BASE_URL}/playlists/${playlist_id}/tracks`
+        const parsed = songs.map(id => `spotify:track:${id}`);
+        const res = await fetch(url, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${access_token}`
+            },
+            body: JSON.stringify({
+                "uris": parsed,
+                "position": 0
+            })
+
+        })
+
+        return await res.json()
+    }
+    catch(error){
+        console.error(`Error during request ${error}`)
+    }
 }
 
 export const add_items_to_saved = async(songs: string[]) =>{
