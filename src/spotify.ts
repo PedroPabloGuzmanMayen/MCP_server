@@ -1,7 +1,14 @@
 import dotenv from 'dotenv';
+import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config({path: './.env'})
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+console.log(__dirname)
+console.log(__filename)
+
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const BASE_URL = 'https://api.spotify.com/v1'
 
@@ -40,6 +47,7 @@ export const get_user_tracks = async (limit: number) =>{
                 }
             })
             const response = await data.json()
+            return response
             
         }
     }
