@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import { url } from 'inspector';
 import path from "path";
+import { isAwaitExpression } from 'typescript';
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -57,7 +58,7 @@ export const search_track_id = async (song: string, artist: string) =>{
         if (data.tracks && data.tracks.items.length > 0) {
             return data.tracks.items[0].id; 
         } else {
-        console.warn("Track not finded");
+        console.warn("Track not found");
         return null;
         }
     }
@@ -67,32 +68,59 @@ export const search_track_id = async (song: string, artist: string) =>{
 
 }
 
-export const get_user_id = async (song: string, artist: string) =>{
+export const get_user_id = async () =>{
 
     try {
-        const q = `track:"${encodeURIComponent(song)}" artist:"${encodeURIComponent(artist)}"`
-        const url = `https://api.spotify.com/v1/search?q=${q}&type=track&limit=5`;
+        const url = `${BASE_URL}/me`;
         const res = await fetch(url, {
         headers: {
             Authorization: `Bearer ${access_token}`,
         },
         })
-        const data = (await res.json()) as SpotifySearchResponse;
+        const data = await res.json() as {id: string}
 
-        if (data.tracks && data.tracks.items.length > 0) {
-            return data.tracks.items[0].id; 
+        if (data) {
+            return {
+                user_id: data,
+                success: true
+            }
         } else {
-        console.warn("Track not finded");
-        return null;
+            console.warn("User not found")
+            return {
+                user_id: "Not found",
+                success: false
+            }
         }
     }
     catch(error){
-        console.log()
+        console.log(error)
     }
 
 }
 
-export const create_playlist = async () =>{
+export const create_playlist = async (user_id: string, name: string, visibility: boolean, collaborative: boolean, description:string ) =>{
+
+    try {
+        const url = `${BASE_URL}/users/${user_id}/playlist`
+        const res = await fetch(url, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${access_token}`
+            },
+            body: JSON.stringify({
+                "name": name,
+                "description": description,
+                "public": visibility,
+                "collaborative": collaborative
+            })
+
+        })
+
+        return await res.json()
+    }
+    catch(error){
+        console.error(`Error during request ${error}`)
+    }
 
 }
 

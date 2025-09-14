@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {z} from 'zod'
-import { get_user_tracks, get_user_top_items, search_track_id, add_items_to_saved } from "./spotify.js";
+import { get_user_tracks, get_user_top_items, search_track_id, add_items_to_saved, get_user_id, create_playlist } from "./spotify.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { text } from "stream/consumers";
 
@@ -127,6 +127,52 @@ server.tool(
                 {
                     type: "text",
                     text: success.toString()
+                }
+            ]
+        }
+
+    }
+)
+
+server.tool(
+    'Search user id',
+    'Tool that can be used to find the current user id, can be userful for creating and modifying playlists',
+
+    async({}) =>{
+
+        const success = await get_user_id()
+
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: JSON.stringify(success)
+                }
+            ]
+        }
+
+    }
+)
+
+server.tool(
+    'Create_playlist',
+    'Tool that can be used to create a playlist for the current user. By default visibility is false unless user specifies that he wants it to be public, this also applies for the field collaborative',
+    {
+        user_id: z.string().describe('User id'),
+        name: z.string().describe('Playlist name'),
+        visibility: z.boolean().describe('If playlist is visible for other users, by default is false '),
+        collaborative: z.boolean().describe('If the playlist is collaborative, by default is false'),
+        description: z.string().describe('A little descrption for the playlist')
+    },
+    async({user_id, name, visibility, collaborative, description}) =>{
+
+        const response = await create_playlist(user_id, name, visibility, collaborative, description)
+
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: JSON.stringify(response)
                 }
             ]
         }

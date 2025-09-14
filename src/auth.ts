@@ -32,7 +32,7 @@ const scopes = [
     'user-read-playback-state',
     'user-read-currently-playing',
     'user-top-read'
-  ];
+  ]
 
 const app = express()
 const PORT = 8000
@@ -130,7 +130,7 @@ app.get('/callback', async (req: Request, res: Response) => {
   }
   catch(error){
     console.error('Error during token exchange:', error);
-    res.status(500).send('Error during authentication');
+    res.status(500).send('Error during authentication')
   }
 
   server.close(() => {
