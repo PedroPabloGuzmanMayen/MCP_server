@@ -17,39 +17,26 @@ const access_token = process.env.TOKEN as String;
 export const get_user_tracks = async (limit: number) =>{
 
     try{
+        let remaining: number = limit
+        let next_request = remaining > 50 ? 50 : remaining;
+        let offset: number = 0
+        let items: any[] = [];
+        while (remaining > 0){
 
-        if (limit > 50){
-            let remaining: number = limit
-            let next_request: number = 50
-            let offset: number = 0
-            let items: any[] = []
-            while (remaining > 0){
-
-                const data = await fetch(`${BASE_URL}/me/tracks?offset=${offset.toString()}&limit=${next_request.toString()}`, {
-                headers: {
-                    Authorization: `Bearer ${access_token}`
-                }
-                })
-                const response = await data.json() as { items: any[] };
-
-                items = [...items, ...response.items]
-                remaining -= next_request //Update the remaing valus to get
-                offset += next_request //Now the offset is updated 
-
-                next_request = remaining > 50 ? 50: remaining
+            const data = await fetch(`${BASE_URL}/me/tracks?offset=${offset.toString()}&limit=${next_request.toString()}`, {
+            headers: {
+                Authorization: `Bearer ${access_token}`
             }
-            return items
-        }
-        else {
-            const data = await fetch(`${BASE_URL}/me/tracks`, {
-                headers: {
-                     Authorization: `Bearer ${access_token}`
-                }
             })
-            const response = await data.json()
-            return response
-            
+            const response = await data.json() as { items: any[] };
+
+            items = [...items, ...response.items]
+            remaining -= next_request
+            offset += next_request 
+
+            next_request = remaining > 50 ? 50: remaining
         }
+        return items  
     }
     catch (error){
         console.error(`Error during request ${error}`)

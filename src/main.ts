@@ -17,18 +17,29 @@ server.tool(
         limit: z.number().describe('Limit'),
     },
     async ({ limit }) => {
-        const response = await get_user_tracks(limit) as { items: any[] }
-        const simplified = response.items.map((item: any) => ({
+
+        const response = await get_user_tracks(limit);
+        if (!response) {
+            return {
+                content: [
+                {
+                    type: "text",
+                    text: "No response received from Spotify API.",
+                },
+                ],
+            };
+        }
+        const simplified = response.map((item: any) => ({
             name: item.track.name,
             artist: item.track.artists.map((a: any) => a.name).join(", "),
             album: item.track.album.name,
-            added_at: item.added_at
-        }))
+            added_at: item.added_at,
+        }));
         return {
             content: [
                 {
                     type: "text",
-                    text: JSON.stringify(response)
+                    text: JSON.stringify(simplified)
                 }
             ]
         }
