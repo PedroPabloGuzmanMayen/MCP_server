@@ -1,7 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {z} from 'zod'
-import { get_user_tracks, get_user_top_items } from "./spotify.js";
+import { get_user_tracks, get_user_top_items, search_track_id, add_items_to_saved } from "./spotify.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { text } from "stream/consumers";
 
 //Init server
 const server = new McpServer({
@@ -82,6 +83,53 @@ server.tool(
 
     }
 )
+
+
+server.tool(
+    'Search_something',
+    'Tool that can be used to get a track id and add it to a playlist',
+    {
+        song_name: z.string().describe('name of the song to search'),
+        artist: z.string().describe('artist that signs the song')
+    },
+    async({song_name, artist}) =>{
+
+        const song_id = await search_track_id(song_name, artist) as string
+
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: song_id.toString()
+                }
+            ]
+        }
+
+    }
+)
+
+server.tool(
+    'Add_to_saved',
+    'Tool that can be used to save tracks in user saved items, should get songs ids first because spotify only accepts ids ',
+    {
+        songs: z.array(z.string()),
+    },
+    async({songs}) =>{
+
+        const success = await add_items_to_saved(songs) as boolean
+
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: success.toString()
+                }
+            ]
+        }
+
+    }
+)
+
 
 const transport = new StdioServerTransport()
 await server.connect(transport)
