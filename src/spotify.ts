@@ -21,38 +21,53 @@ type SpotifySearchResponse = {
   };
 };
 
-export const get_user_tracks = async (limit: number) =>{
+
+export const get_user_tracks = async (limit: number, offset: number) =>{
 
     try{
-        let remaining: number = limit
-        let next_request = remaining > 50 ? 50 : remaining;
-        let offset: number = 0
-        let items: any[] = [];
-        while (remaining > 0){
-
-            const data = await fetch(`${BASE_URL}/me/tracks?offset=${offset.toString()}&limit=${next_request.toString()}`, {
-            headers: {
-                Authorization: `Bearer ${access_token}`
-            }
-            })
-            const response = await data.json() as { items: any[] };
-
-            items = [...items, ...response.items]
-            remaining -= next_request
-            offset += next_request 
-
-            next_request = remaining > 50 ? 50: remaining
+        const response = await fetch(`${BASE_URL}/me/tracks?offset=${offset.toString()}&limit=${limit.toString()}`, {
+        headers: {
+            Authorization: `Bearer ${access_token}`
         }
-        return items  
+        })
+        const data = await response.json() as { items: any[]; total: number };
+
+        return {
+            items: data.items,
+            total: data.total
+        }
     }
     catch (error){
         console.error(`Error during request ${error}`)
     }
+}
+
+export const search_track_id = async (song: string, artist: string) =>{
+
+    try {
+        const q = `track:"${encodeURIComponent(song)}" artist:"${encodeURIComponent(artist)}"`
+        const url = `${BASE_URL}/me`;
+        const res = await fetch(url, {
+        headers: {
+            Authorization: `Bearer ${access_token}`,
+        },
+        })
+        const data = (await res.json()) as SpotifySearchResponse;
+
+        if (data.tracks && data.tracks.items.length > 0) {
+            return data.tracks.items[0].id; 
+        } else {
+        console.warn("Track not finded");
+        return null;
+        }
+    }
+    catch(error){
+        console.log(`Error during request ${error}`)
+    }
 
 }
 
-
-export const search_track_id = async (song: string, artist: string) =>{
+export const get_user_id = async (song: string, artist: string) =>{
 
     try {
         const q = `track:"${encodeURIComponent(song)}" artist:"${encodeURIComponent(artist)}"`
@@ -76,7 +91,6 @@ export const search_track_id = async (song: string, artist: string) =>{
     }
 
 }
-
 
 export const create_playlist = async () =>{
 

@@ -16,10 +16,11 @@ server.tool(
     'Tool to get user tracks',
     {
         limit: z.number().describe('Limit'),
+        offset: z.number().describe('Offset')
     },
-    async ({ limit }) => {
+    async ({ limit, offset }) => {
 
-        const response = await get_user_tracks(limit);
+        const response = await get_user_tracks(limit, offset);
         if (!response) {
             return {
                 content: [
@@ -28,14 +29,17 @@ server.tool(
                     text: "No response received from Spotify API.",
                 },
                 ],
-            };
+            }
         }
-        const simplified = response.map((item: any) => ({
+        const simplified = {
+            items: response.items.map((item: any) => ({
             name: item.track.name,
             artist: item.track.artists.map((a: any) => a.name).join(", "),
             album: item.track.album.name,
             added_at: item.added_at,
-        }));
+        })),
+            total_songs: response.total
+        }
         return {
             content: [
                 {
