@@ -101,7 +101,7 @@ export const get_user_id = async () =>{
 export const create_playlist = async (user_id: string, name: string, visibility: boolean, collaborative: boolean, description:string ) =>{
 
     try {
-        const url = `${BASE_URL}/users/${user_id}/playlist`
+        const url = `${BASE_URL}/users/${user_id}/playlists`
         const res = await fetch(url, {
             method: "POST",
             headers: {

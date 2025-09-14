@@ -135,7 +135,7 @@ server.tool(
 )
 
 server.tool(
-    'Search user id',
+    'Search_user_id',
     'Tool that can be used to find the current user id, can be userful for creating and modifying playlists',
 
     async({}) =>{
