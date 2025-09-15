@@ -43,5 +43,14 @@ npm run auth
 - Open your localhost in port 8000 in your browser, this will redirect you to Spotify, login and give the necessary permissions.
 - This will create a `TOKEN` field in your `.env`
 
+Finally, if you use Claude Desktop add this to your mcp servers configuration file: 
 
+```bash
+{
+    "name": "spotify",
+    "type": "stdio",
+    "command": "node",
+    "args":["../MCP_server/dist/main.js"]
+}
+```
 
