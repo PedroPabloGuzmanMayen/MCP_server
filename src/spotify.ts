@@ -40,6 +40,7 @@ export const get_user_tracks = async (limit: number, offset: number) =>{
     }
     catch (error){
         console.error(`Error during request ${error}`)
+        return null
     }
 }
 
@@ -47,7 +48,7 @@ export const search_track_id = async (song: string, artist: string) =>{
 
     try {
         const q = `track:"${encodeURIComponent(song)}" artist:"${encodeURIComponent(artist)}"`
-        const url = `${BASE_URL}/search`;
+        const url = `https://api.spotify.com/v1/search?q=${q}&type=track&limit=5`;
         const res = await fetch(url, {
         headers: {
             Authorization: `Bearer ${access_token}`,
@@ -58,12 +59,13 @@ export const search_track_id = async (song: string, artist: string) =>{
         if (data.tracks && data.tracks.items.length > 0) {
             return data.tracks.items[0].id; 
         } else {
-        console.warn("Track not found");
+        console.warn("Track not finded");
         return null;
         }
     }
     catch(error){
         console.log(`Error during request ${error}`)
+        return null
     }
 
 }
@@ -93,7 +95,8 @@ export const get_user_id = async () =>{
         }
     }
     catch(error){
-        console.log(error)
+        console.log(`Error during request ${error}`)
+        return null
     }
 
 }
@@ -120,6 +123,7 @@ export const create_playlist = async (user_id: string, name: string, visibility:
     }
     catch(error){
         console.error(`Error during request ${error}`)
+        return null
     }
 
 }
@@ -137,6 +141,7 @@ export const get_user_playlists_id = async(user_id: string, limit: number, offse
     }
     catch(error){
         console.error(`Error during request ${error}`)
+        return null
     }
 }
 
@@ -161,6 +166,7 @@ export const add_items_to_playlist = async(songs: string[], playlist_id: string)
     }
     catch(error){
         console.error(`Error during request ${error}`)
+        return null
     }
 }
 
@@ -186,6 +192,7 @@ export const add_items_to_saved = async(songs: string[]) =>{
     }
     catch(error){
         console.error(`Error during request ${error}`)
+        return null
     }
 }
 
@@ -204,6 +211,7 @@ export const get_user_top_items = async (type: string, time_range: string, offse
     }
     catch(error){
         console.error(error)
+        return null
     }
 
 }
