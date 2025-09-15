@@ -47,7 +47,7 @@ export const search_track_id = async (song: string, artist: string) =>{
 
     try {
         const q = `track:"${encodeURIComponent(song)}" artist:"${encodeURIComponent(artist)}"`
-        const url = `${BASE_URL}/me`;
+        const url = `${BASE_URL}/search`;
         const res = await fetch(url, {
         headers: {
             Authorization: `Bearer ${access_token}`,
